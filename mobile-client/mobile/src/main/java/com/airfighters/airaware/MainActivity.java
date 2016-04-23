@@ -2,6 +2,8 @@ package com.airfighters.airaware;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -10,31 +12,31 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.airfighters.airaware.model.City;
 import com.airfighters.airaware.utils.Constants;
 import com.airfighters.airaware.utils.CustomClusterRendering;
-import com.airfighters.airaware.utils.MultiListener;
+import com.airfighters.airaware.utils.MultiCameraChangeListener;
+import com.airfighters.airaware.utils.MultiMarkerClickListener;
 import com.airfighters.airaware.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.ClusterManager;
 import com.ogaclejapan.arclayout.ArcLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
     private String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
     private  ClusterManager<City> mClusterManager;
-    private Marker marcu;
 
     List<City> orase;
 
@@ -89,40 +91,35 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setOnMarkerClickListener(this);
-        //mMap.setOnCameraChangeListener(this);
-
-        Log.d(TAG, mMap.getMinZoomLevel() + "\t" + mMap.getMaxZoomLevel());
-
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        marcu = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
         setUpClusterer();
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (marker.equals(marcu)) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), Constants.MARKER_CLICK_ZOOM_LEVEL));
-            return true;
-        }
-        return false;
+        Log.d(TAG, "click");
+
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), Constants.MARKER_CLICK_ZOOM_LEVEL));
+        return true;
     }
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        Log.d("zoom", "" + cameraPosition.zoom);
         boolean found = false;
+
         for (City city : orase) {
             if (Utils.arePointsNear(city.position, cameraPosition.target)) {
+                setCurrentCity(city);
+
                 if (!centerItem.isSelected()) {
                     return;
                 }
+
                 centerItem.setSelected(false);
                 onFabClick(centerItem);
                 found = true;
+                break;
             }
         }
 
@@ -141,14 +138,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mClusterManager = new ClusterManager<>(this, mMap);
         mClusterManager.setRenderer(new CustomClusterRendering(this, mMap, mClusterManager));
 
-        MultiListener ml = new MultiListener();
+        MultiCameraChangeListener ml = new MultiCameraChangeListener();
         ml.addListener(mClusterManager);
         ml.addListener(this);
 
         // Point the map's listeners at the listeners implemented by the cluster
         // manager.
         mMap.setOnCameraChangeListener(ml);
-        mMap.setOnMarkerClickListener(mClusterManager);
+
+        MultiMarkerClickListener markerClickListener = new MultiMarkerClickListener();
+        //markerClickListener.addListener(mClusterManager);
+        markerClickListener.addListener(this);
+
+        mMap.setOnMarkerClickListener(markerClickListener);
 
         generateDummyData();
     }
@@ -160,9 +162,23 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         mClusterManager.addItems(orase);
-        /*for (City city : orase) {
-            mMap.addMarker(new MarkerOptions().position(city.position).title(city.name));
-        }*/
+    }
+
+    private void setCurrentCity(final City city) {
+        Random random = new Random();
+        int temp = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
+
+        for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
+            final int raton = i;
+            FloatingActionButton fab = (FloatingActionButton) arcLayout.getChildAt(i);
+            fab.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{temp}));
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(), city.diseases.get(raton).title, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void onFabClick(View v) {
