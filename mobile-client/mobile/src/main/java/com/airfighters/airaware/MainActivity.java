@@ -1,27 +1,20 @@
 package com.airfighters.airaware;
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewAnimationUtils;
-import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
-import android.widget.FrameLayout;
 
-import com.airfighters.airaware.utils.AnimatorUtils;
+import com.airfighters.airaware.model.City;
 import com.airfighters.airaware.utils.Constants;
+import com.airfighters.airaware.utils.CustomClusterRendering;
+import com.airfighters.airaware.utils.MultiListener;
 import com.airfighters.airaware.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,6 +24,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.ClusterManager;
 import com.ogaclejapan.arclayout.ArcLayout;
 
 import java.util.ArrayList;
@@ -39,11 +33,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
     private String TAG = getClass().getSimpleName();
     private GoogleMap mMap;
+    private  ClusterManager<City> mClusterManager;
     private Marker marcu;
 
-    private Button butoi;
+    List<City> orase;
 
-    private FrameLayout rootLayout;
     private ArcLayout arcLayout;
     private FloatingActionButton centerItem;
 
@@ -53,8 +47,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        butoi = (Button) findViewById(R.id.button);
 
         setupMap();
         attachViews();
@@ -90,7 +82,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void attachViews() {
-        rootLayout = (FrameLayout) findViewById(R.id.rootLayoutDetails);
         arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
         centerItem = (FloatingActionButton) findViewById(R.id.center_item);
     }
@@ -99,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMarkerClickListener(this);
-        mMap.setOnCameraChangeListener(this);
+        //mMap.setOnCameraChangeListener(this);
 
         Log.d(TAG, mMap.getMinZoomLevel() + "\t" + mMap.getMaxZoomLevel());
 
@@ -108,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         marcu = mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        setUpClusterer();
     }
 
     @Override
@@ -121,13 +114,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        if (Utils.arePointsNear(marcu.getPosition(), cameraPosition.target)) {
-            if (!centerItem.isSelected()) {
-                return;
+        boolean found = false;
+        for (City city : orase) {
+            if (Utils.arePointsNear(city.position, cameraPosition.target)) {
+                if (!centerItem.isSelected()) {
+                    return;
+                }
+                centerItem.setSelected(false);
+                onFabClick(centerItem);
+                found = true;
             }
-            centerItem.setSelected(false);
-            onFabClick(centerItem);
-        } else {
+        }
+
+        if (!found) {
             if (centerItem.isSelected()) {
                 return;
             }
@@ -136,30 +135,51 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void onFabClick(View v) {
-        int x = (v.getLeft() + v.getRight()) / 2;
-        int y = (v.getTop() + v.getBottom()) / 2;
-        float radiusOfFab = 1f * v.getWidth() / 2f;
-        float radiusFromFabToRoot = (float) Math.hypot(
-                Math.max(x, rootLayout.getWidth() - x),
-                Math.max(y, rootLayout.getHeight() - y));
+    private void setUpClusterer() {
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<>(this, mMap);
+        mClusterManager.setRenderer(new CustomClusterRendering(this, mMap, mClusterManager));
 
+        MultiListener ml = new MultiListener();
+        ml.addListener(mClusterManager);
+        ml.addListener(this);
+
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mMap.setOnCameraChangeListener(ml);
+        mMap.setOnMarkerClickListener(mClusterManager);
+
+        generateDummyData();
+    }
+
+    private void generateDummyData() {
+        orase = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            orase.add(Utils.getDummyCity(i));
+        }
+
+        mClusterManager.addItems(orase);
+        /*for (City city : orase) {
+            mMap.addMarker(new MarkerOptions().position(city.position).title(city.name));
+        }*/
+    }
+
+    private void onFabClick(View v) {
         if (v.isSelected()) {
-            hideMenu(x, y, radiusFromFabToRoot, radiusOfFab);
+            hideMenu();
         } else {
-            showMenu(x, y, radiusOfFab, radiusFromFabToRoot);
+            showMenu();
         }
     }
 
-    private void showMenu(int cx, int cy, float startRadius, float endRadius) {
-        //menuLayout.setVisibility(View.VISIBLE);
-
+    private void showMenu() {
         List<Animator> animList = new ArrayList<>();
 
-        animList.add(createShowItemAnimator(centerItem));
+        animList.add(Utils.createShowItemAnimator(centerItem, centerItem));
 
         for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
-            animList.add(createShowItemAnimator(arcLayout.getChildAt(i)));
+            animList.add(Utils.createShowItemAnimator(centerItem, arcLayout.getChildAt(i)));
         }
 
         AnimatorSet animSet = new AnimatorSet();
@@ -167,66 +187,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         animSet.start();
     }
 
-    private void hideMenu(int cx, int cy, float startRadius, float endRadius) {
+    private void hideMenu() {
         List<Animator> animList = new ArrayList<>();
 
         for (int i = arcLayout.getChildCount() - 1; i >= 0; i--) {
-            animList.add(createHideItemAnimator(arcLayout.getChildAt(i)));
+            animList.add(Utils.createHideItemAnimator(centerItem, arcLayout.getChildAt(i)));
         }
 
-        animList.add(createHideItemAnimator(centerItem));
+        animList.add(Utils.createHideItemAnimator(centerItem, centerItem));
 
 
         AnimatorSet animSet = new AnimatorSet();
         animSet.playSequentially(animList);
         animSet.start();
 
-    }
-
-    private Animator createShowItemAnimator(View item) {
-        float dx = centerItem.getX() - item.getX();
-        float dy = centerItem.getY() - item.getY();
-
-        item.setScaleX(0f);
-        item.setScaleY(0f);
-        item.setTranslationX(dx);
-        item.setTranslationY(dy);
-
-        Animator anim = ObjectAnimator.ofPropertyValuesHolder(
-                item,
-                AnimatorUtils.scaleX(0f, 1f),
-                AnimatorUtils.scaleY(0f, 1f),
-                AnimatorUtils.translationX(dx, 0f),
-                AnimatorUtils.translationY(dy, 0f)
-        );
-
-        anim.setInterpolator(new DecelerateInterpolator());
-        anim.setDuration(50);
-        return anim;
-    }
-
-    private Animator createHideItemAnimator(final View item) {
-        final float dx = centerItem.getX() - item.getX();
-        final float dy = centerItem.getY() - item.getY();
-
-        Animator anim = ObjectAnimator.ofPropertyValuesHolder(
-                item,
-                AnimatorUtils.scaleX(1f, 0f),
-                AnimatorUtils.scaleY(1f, 0f),
-                AnimatorUtils.translationX(0f, dx),
-                AnimatorUtils.translationY(0f, dy)
-        );
-
-        anim.setInterpolator(new DecelerateInterpolator());
-        anim.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                item.setTranslationX(0f);
-                item.setTranslationY(0f);
-            }
-        });
-        anim.setDuration(50);
-        return anim;
     }
 }
