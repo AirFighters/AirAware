@@ -5,6 +5,9 @@ import android.animation.AnimatorSet;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -12,7 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.airfighters.airaware.model.City;
 import com.airfighters.airaware.utils.Constants;
@@ -42,6 +45,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private ArcLayout arcLayout;
     private FloatingActionButton centerItem;
+
+    private BottomSheetBehavior behavior;
+    private TextView diseaseTitle;
+    private TextView diseaseDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +93,18 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void attachViews() {
         arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
         centerItem = (FloatingActionButton) findViewById(R.id.center_item);
+
+        diseaseTitle = (TextView) findViewById(R.id.diseaseTitle);
+        diseaseDescription = (TextView) findViewById(R.id.diseaseDescription);
+
+        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_content);
+
+        if (coordinatorLayout == null) {
+            return;
+        }
+        // The View with the BottomSheetBehavior
+        View bottomSheet = coordinatorLayout.findViewById(R.id.bottom_sheet);
+        behavior = BottomSheetBehavior.from(bottomSheet);
     }
 
     @Override
@@ -100,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.d(TAG, "click");
 
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(), Constants.MARKER_CLICK_ZOOM_LEVEL));
+        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
         return true;
     }
 
@@ -124,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         if (!found) {
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
             if (centerItem.isSelected()) {
                 return;
             }
@@ -169,16 +190,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         int temp = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
 
         for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
-            final int raton = i;
-            FloatingActionButton fab = (FloatingActionButton) arcLayout.getChildAt(i);
-            fab.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{temp}));
-            fab.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(getApplicationContext(), city.diseases.get(raton).title, Toast.LENGTH_SHORT).show();
-                }
-            });
+            setupFabClickListener(city, i);
         }
+    }
+
+    private void setupFabClickListener(final City city, final int idx) {
+        FloatingActionButton fab = (FloatingActionButton) arcLayout.getChildAt(idx);
+        //todo it is working but we need color code for specific disease fab.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{temp}));
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                diseaseTitle.setText(city.diseases.get(idx).title);
+                diseaseDescription.setText(city.diseases.get(idx).description);
+            }
+        });
     }
 
     private void onFabClick(View v) {
@@ -212,10 +238,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         animList.add(Utils.createHideItemAnimator(centerItem, centerItem));
 
-
         AnimatorSet animSet = new AnimatorSet();
         animSet.playSequentially(animList);
         animSet.start();
-
     }
 }
