@@ -1,5 +1,10 @@
 package com.airfighters.airaware;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,8 +14,13 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewAnimationUtils;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.FrameLayout;
 
+import com.airfighters.airaware.utils.AnimatorUtils;
 import com.airfighters.airaware.utils.Constants;
 import com.airfighters.airaware.utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -21,6 +31,10 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.ogaclejapan.arclayout.ArcLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
     private String TAG = getClass().getSimpleName();
@@ -29,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Button butoi;
 
+    private FrameLayout rootLayout;
+    private ArcLayout arcLayout;
+    private FloatingActionButton centerItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,18 +54,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         butoi = (Button) findViewById(R.id.button);
 
         setupMap();
+        attachViews();
     }
 
     @Override
@@ -79,6 +89,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
     }
 
+    private void attachViews() {
+        rootLayout = (FrameLayout) findViewById(R.id.rootLayoutDetails);
+        arcLayout = (ArcLayout) findViewById(R.id.arc_layout);
+        centerItem = (FloatingActionButton) findViewById(R.id.center_item);
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -105,13 +121,112 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        Log.d(TAG, cameraPosition.target.latitude + "\t" + cameraPosition.target.longitude);
         if (Utils.arePointsNear(marcu.getPosition(), cameraPosition.target)) {
-            Log.d(TAG, "is acolo");
-            butoi.setVisibility(View.VISIBLE);
+            if (!centerItem.isSelected()) {
+                return;
+            }
+            centerItem.setSelected(false);
+            onFabClick(centerItem);
         } else {
-            Log.d(TAG, "nu is acolo");
-            butoi.setVisibility(View.GONE);
+            if (centerItem.isSelected()) {
+                return;
+            }
+            centerItem.setSelected(true);
+            onFabClick(centerItem);
         }
+    }
+
+    private void onFabClick(View v) {
+        int x = (v.getLeft() + v.getRight()) / 2;
+        int y = (v.getTop() + v.getBottom()) / 2;
+        float radiusOfFab = 1f * v.getWidth() / 2f;
+        float radiusFromFabToRoot = (float) Math.hypot(
+                Math.max(x, rootLayout.getWidth() - x),
+                Math.max(y, rootLayout.getHeight() - y));
+
+        if (v.isSelected()) {
+            hideMenu(x, y, radiusFromFabToRoot, radiusOfFab);
+        } else {
+            showMenu(x, y, radiusOfFab, radiusFromFabToRoot);
+        }
+    }
+
+    private void showMenu(int cx, int cy, float startRadius, float endRadius) {
+        //menuLayout.setVisibility(View.VISIBLE);
+
+        List<Animator> animList = new ArrayList<>();
+
+        animList.add(createShowItemAnimator(centerItem));
+
+        for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
+            animList.add(createShowItemAnimator(arcLayout.getChildAt(i)));
+        }
+
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.playSequentially(animList);
+        animSet.start();
+    }
+
+    private void hideMenu(int cx, int cy, float startRadius, float endRadius) {
+        List<Animator> animList = new ArrayList<>();
+
+        for (int i = arcLayout.getChildCount() - 1; i >= 0; i--) {
+            animList.add(createHideItemAnimator(arcLayout.getChildAt(i)));
+        }
+
+        animList.add(createHideItemAnimator(centerItem));
+
+
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.playSequentially(animList);
+        animSet.start();
+
+    }
+
+    private Animator createShowItemAnimator(View item) {
+        float dx = centerItem.getX() - item.getX();
+        float dy = centerItem.getY() - item.getY();
+
+        item.setScaleX(0f);
+        item.setScaleY(0f);
+        item.setTranslationX(dx);
+        item.setTranslationY(dy);
+
+        Animator anim = ObjectAnimator.ofPropertyValuesHolder(
+                item,
+                AnimatorUtils.scaleX(0f, 1f),
+                AnimatorUtils.scaleY(0f, 1f),
+                AnimatorUtils.translationX(dx, 0f),
+                AnimatorUtils.translationY(dy, 0f)
+        );
+
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.setDuration(50);
+        return anim;
+    }
+
+    private Animator createHideItemAnimator(final View item) {
+        final float dx = centerItem.getX() - item.getX();
+        final float dy = centerItem.getY() - item.getY();
+
+        Animator anim = ObjectAnimator.ofPropertyValuesHolder(
+                item,
+                AnimatorUtils.scaleX(1f, 0f),
+                AnimatorUtils.scaleY(1f, 0f),
+                AnimatorUtils.translationX(0f, dx),
+                AnimatorUtils.translationY(0f, dy)
+        );
+
+        anim.setInterpolator(new DecelerateInterpolator());
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                item.setTranslationX(0f);
+                item.setTranslationY(0f);
+            }
+        });
+        anim.setDuration(50);
+        return anim;
     }
 }
