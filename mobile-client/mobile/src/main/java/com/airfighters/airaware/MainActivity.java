@@ -5,7 +5,6 @@ import android.animation.AnimatorSet;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -17,18 +16,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.airfighters.airaware.model.Cities;
 import com.airfighters.airaware.model.City;
+import com.airfighters.airaware.model.Disease;
+import com.airfighters.airaware.model.Diseases;
+import com.airfighters.airaware.model.Oras;
 import com.airfighters.airaware.utils.Constants;
 import com.airfighters.airaware.utils.CustomClusterRendering;
 import com.airfighters.airaware.utils.MultiCameraChangeListener;
 import com.airfighters.airaware.utils.MultiMarkerClickListener;
 import com.airfighters.airaware.utils.Utils;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.gson.Gson;
 import com.google.maps.android.clustering.ClusterManager;
 import com.ogaclejapan.arclayout.ArcLayout;
 
@@ -48,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private BottomSheetBehavior behavior;
     private TextView diseaseTitle;
+    private TextView affectedPeople;
     private TextView diseaseDescription;
 
     @Override
@@ -95,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         centerItem = (FloatingActionButton) findViewById(R.id.center_item);
 
         diseaseTitle = (TextView) findViewById(R.id.diseaseTitle);
+        affectedPeople = (TextView) findViewById(R.id.affectedPeople);
         diseaseDescription = (TextView) findViewById(R.id.diseaseDescription);
 
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) findViewById(R.id.main_content);
@@ -110,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(1, 1)));
 
         setUpClusterer();
     }
@@ -176,19 +185,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         generateDummyData();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (behavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        } else if (behavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        } else if (!centerItem.isSelected()) {
+            centerItem.setSelected(true);
+            hideMenu();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     private void generateDummyData() {
+        Diseases diseases = new Gson().fromJson(Constants.DISEASES_JSON, Diseases.class);
+        Cities cities = new Gson().fromJson(Constants.CITIES_JSON, Cities.class);
+
         orase = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            orase.add(Utils.getDummyCity(i));
+        for (Oras oras : cities.cities) {
+            orase.add(Utils.getCity(oras, diseases.diseases));
         }
 
         mClusterManager.addItems(orase);
     }
 
     private void setCurrentCity(final City city) {
-        Random random = new Random();
-        int temp = Color.argb(255, random.nextInt(256), random.nextInt(256), random.nextInt(256));
-
         for (int i = 0, len = arcLayout.getChildCount(); i < len; i++) {
             setupFabClickListener(city, i);
         }
@@ -196,12 +219,13 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void setupFabClickListener(final City city, final int idx) {
         FloatingActionButton fab = (FloatingActionButton) arcLayout.getChildAt(idx);
-        //todo it is working but we need color code for specific disease fab.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{temp}));
+        fab.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{Color.parseColor(city.diseases.get(idx).color)}));
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 diseaseTitle.setText(city.diseases.get(idx).title);
+                affectedPeople.setText(Utils.coolFormat(city.diseases.get(idx).peopleAffected, 0));
                 diseaseDescription.setText(city.diseases.get(idx).description);
             }
         });
@@ -216,6 +240,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void showMenu() {
+        arcLayout.setVisibility(View.VISIBLE);
         List<Animator> animList = new ArrayList<>();
 
         animList.add(Utils.createShowItemAnimator(centerItem, centerItem));
@@ -240,6 +265,27 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         AnimatorSet animSet = new AnimatorSet();
         animSet.playSequentially(animList);
+        animSet.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                arcLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         animSet.start();
     }
 }

@@ -3,16 +3,21 @@ package com.airfighters.airaware.utils;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import com.airfighters.airaware.R;
 import com.airfighters.airaware.model.City;
 import com.airfighters.airaware.model.Disease;
+import com.airfighters.airaware.model.Diseases;
+import com.airfighters.airaware.model.Oras;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by alex on 23.04.2016.
@@ -32,7 +37,7 @@ public class Utils {
      * @param iteration in fact this is the class from the array c
      * @return a String representing the number n formatted in a cool looking way.
      */
-    private static String coolFormat(double n, int iteration) {
+    public static String coolFormat(double n, int iteration) {
         double d = ((long) n / 100) / 10.0;
         boolean isRound = (d * 10) % 10 == 0;//true if the decimal part is equal to 0 (then it's trimmed anyway)
         return (d < 1000? //this determines the class, i.e. 'k', 'm' etc
@@ -43,12 +48,15 @@ public class Utils {
 
     }
 
-    public static City getDummyCity(int i) {
+
+    public static City getCity(Oras oras, List<Disease> diseases) {
         List<Disease> boale = new ArrayList<>();
-        boale.add(new Disease("title a " + i, "description a " + i, 10));
-        boale.add(new Disease("title b " + i, "description b " + i, 100));
-        boale.add(new Disease("title c " + i, "description c " + i, 1000000));
-        return new City("City " + i, new LatLng(i, 2 * i), boale);
+
+        for (Integer dIdx : oras.diseases) {
+            boale.add(diseases.get(dIdx));
+        }
+
+        return new City(oras.name, new LatLng(oras.latitude, oras.longitude), boale);
     }
 
     public static Animator createShowItemAnimator(View centerItem, View item) {

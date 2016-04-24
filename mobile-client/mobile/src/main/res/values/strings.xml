@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">AirAware</string>
     <string name="action_settings">Settings</string>
+
+    <string name="disease_title_test">Test title</string>
+    <string name="disease_description_test">Test title</string>
+    <string name="city_title_test">City title</string>
 </resources>

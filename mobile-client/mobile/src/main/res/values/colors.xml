@@ -5,4 +5,15 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="white">#ffff</color>
+    <color name="divider">#B6B6B6</color>
+
+    <color name="md_red_500">#F44336</color>
+    <color name="md_purple_500">#9C27B0</color>
+    <color name="md_indigo_500">#3F51B5</color>
+    <color name="md_blue_500">#2196F3</color>
+    <color name="md_cyan_500">#00BCD4</color>
+    <color name="md_teal_500">#009688</color>
+    <color name="md_green_500">#4CAF50</color>
+    <color name="md_amber_500">#FFC107</color>
+    <color name="md_deep_orange_500">#FF5722</color>
 </resources>
