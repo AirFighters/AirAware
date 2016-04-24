@@ -3,6 +3,7 @@ package com.airfighters.airaware;
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.content.res.ColorStateList;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
@@ -14,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.airfighters.airaware.model.Cities;
@@ -201,9 +203,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Cities cities = new Gson().fromJson(Constants.CITIES_JSON, Cities.class);
 
         orase = new ArrayList<>();
-        for (Oras oras : cities.cities) {
-            orase.add(Utils.getCity(oras, diseases.diseases));
+
+        int arraySize = cities.cities.size();
+        for (int i = 0; i < arraySize; i++) {
+            City temp = Utils.getCity(cities.cities.get(i), diseases.diseases);
+            temp.pollutionFactor = (arraySize - i) / (float) arraySize;
+
+            orase.add(temp);
         }
+
 
         mClusterManager.addItems(orase);
     }

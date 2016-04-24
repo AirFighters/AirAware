@@ -71,7 +71,7 @@ public class Utils {
             boale.add(new Disease(temp.title, temp.description, temp.color, ppl));
         }
 
-        return new City(oras.name, new LatLng(oras.latitude, oras.longitude), boale);
+        return new City(oras.population, oras.name, new LatLng(oras.latitude, oras.longitude), boale);
     }
 
     public static Animator createShowItemAnimator(View centerItem, View item) {
