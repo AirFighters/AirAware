@@ -2,6 +2,7 @@ package com.airfighters.airaware;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
+import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,19 +10,22 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.airfighters.airaware.model.Cities;
 import com.airfighters.airaware.model.City;
 import com.airfighters.airaware.model.Diseases;
-import com.airfighters.airaware.model.Oras;
 import com.airfighters.airaware.utils.Constants;
 import com.airfighters.airaware.utils.CustomClusterRendering;
 import com.airfighters.airaware.utils.MultiCameraChangeListener;
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         setupMap();
         attachViews();
+        //showFeedbackDialog();
     }
 
     @Override
@@ -229,9 +234,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                float proc = ((float) city.diseases.get(idx).peopleAffected / city.population) * 100;
+                String percentage = Utils.coolFormat(city.diseases.get(idx).peopleAffected, 0) + " (" + String.format("%.2f", proc) + "%)";
+
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 diseaseTitle.setText(city.diseases.get(idx).title);
-                affectedPeople.setText(Utils.coolFormat(city.diseases.get(idx).peopleAffected, 0));
+                affectedPeople.setText(percentage);
                 diseaseDescription.setText(city.diseases.get(idx).description);
             }
         });
@@ -293,5 +301,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
         animSet.start();
+    }
+
+    private void showFeedbackDialog() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.feedback_title)
+                .content(R.string.feedback_content)
+                .inputType(InputType.TYPE_CLASS_TEXT)
+                .input(R.string.feedback_hint, R.string.feedback_pre, new MaterialDialog.InputCallback() {
+                    @Override
+                    public void onInput(MaterialDialog dialog, CharSequence input) {
+                        // Do something
+                        Snackbar.make(arcLayout, getResources().getString(R.string.feedback_thanks), Snackbar.LENGTH_SHORT).show();
+                    }
+                }).show();
     }
 }

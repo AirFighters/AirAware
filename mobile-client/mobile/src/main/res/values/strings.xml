@@ -5,4 +5,10 @@
     <string name="disease_title_test">Test title</string>
     <string name="disease_description_test">Test title</string>
     <string name="city_title_test">City title</string>
+
+    <string name="feedback_title">Feedback</string>
+    <string name="feedback_content">If you\'d like to help us improve our system, you can anonymously insert your symptoms.</string>
+    <string name="feedback_thanks">Thank you for your submission.</string>
+    <string name="feedback_hint">Headaches, stomachaches, etc.</string>
+    <string name="feedback_pre"></string>
 </resources>
