@@ -14,21 +14,21 @@
         app:arc_origin="center"
         app:arc_radius="@dimen/layout_radius">
 
-        <android.support.design.widget.FloatingActionButton
+        <com.airfighters.airaware.ButonArogant
             style="@style/Item.Detail"
             android:id="@+id/fab"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_margin="@dimen/fab_margin"/>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.airfighters.airaware.ButonArogant
             style="@style/Item.Detail"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_margin="@dimen/fab_margin"/>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.airfighters.airaware.ButonArogant
             style="@style/Item.Detail"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_dialog_email" />
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_margin="@dimen/fab_margin" />
     </com.ogaclejapan.arclayout.ArcLayout>
 
     <android.support.design.widget.FloatingActionButton

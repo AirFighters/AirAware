@@ -18,7 +18,6 @@ import android.widget.TextView;
 
 import com.airfighters.airaware.model.Cities;
 import com.airfighters.airaware.model.City;
-import com.airfighters.airaware.model.Disease;
 import com.airfighters.airaware.model.Diseases;
 import com.airfighters.airaware.model.Oras;
 import com.airfighters.airaware.utils.Constants;
@@ -26,7 +25,6 @@ import com.airfighters.airaware.utils.CustomClusterRendering;
 import com.airfighters.airaware.utils.MultiCameraChangeListener;
 import com.airfighters.airaware.utils.MultiMarkerClickListener;
 import com.airfighters.airaware.utils.Utils;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -40,7 +38,6 @@ import com.ogaclejapan.arclayout.ArcLayout;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraChangeListener {
     private String TAG = getClass().getSimpleName();
@@ -218,9 +215,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void setupFabClickListener(final City city, final int idx) {
-        FloatingActionButton fab = (FloatingActionButton) arcLayout.getChildAt(idx);
-        fab.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{Color.parseColor(city.diseases.get(idx).color)}));
-        fab.setOnClickListener(new View.OnClickListener() {
+        ButonArogant button = (ButonArogant) arcLayout.getChildAt(idx);
+        button.changeColor(Color.parseColor(city.diseases.get(idx).color));
+        button.setText(Utils.coolFormat(city.diseases.get(idx).peopleAffected, 0));
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);

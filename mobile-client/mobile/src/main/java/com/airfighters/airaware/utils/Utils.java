@@ -4,6 +4,18 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
@@ -48,12 +60,15 @@ public class Utils {
 
     }
 
+    private static Random rand = new Random();
 
     public static City getCity(Oras oras, List<Disease> diseases) {
         List<Disease> boale = new ArrayList<>();
 
         for (Integer dIdx : oras.diseases) {
-            boale.add(diseases.get(dIdx));
+            Disease temp = diseases.get(dIdx);
+            int ppl = rand.nextInt(10000) + 100;
+            boale.add(new Disease(temp.title, temp.description, temp.color, ppl));
         }
 
         return new City(oras.name, new LatLng(oras.latitude, oras.longitude), boale);
@@ -104,5 +119,14 @@ public class Utils {
         });
         anim.setDuration(50);
         return anim;
+    }
+
+    public static Bitmap makeTintedBitmap(Bitmap src, int color) {
+        Bitmap result = Bitmap.createBitmap(src.getWidth(), src.getHeight(), src.getConfig());
+        Canvas c = new Canvas(result);
+        Paint paint = new Paint();
+        paint.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_ATOP));
+        c.drawBitmap(src, 0, 0, paint);
+        return result;
     }
 }

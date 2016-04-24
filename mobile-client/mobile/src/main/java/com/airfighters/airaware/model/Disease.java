@@ -17,7 +17,8 @@ public class Disease {
 
     public int peopleAffected;
 
-    public Disease(String title, String description, int peopleAffected) {
+    public Disease(String title, String description, String color, int peopleAffected) {
+        this.color = color;
         this.title = title;
         this.description = description;
         this.peopleAffected = peopleAffected;
