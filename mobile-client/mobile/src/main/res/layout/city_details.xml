@@ -14,18 +14,18 @@
         app:arc_origin="center"
         app:arc_radius="@dimen/layout_radius">
 
-        <com.airfighters.airaware.ButonArogant
+        <com.airfighters.airaware.views.ButonArogant
             style="@style/Item.Detail"
             android:id="@+id/fab"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_margin="@dimen/fab_margin"/>
 
-        <com.airfighters.airaware.ButonArogant
+        <com.airfighters.airaware.views.ButonArogant
             style="@style/Item.Detail"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_margin="@dimen/fab_margin"/>
 
-        <com.airfighters.airaware.ButonArogant
+        <com.airfighters.airaware.views.ButonArogant
             style="@style/Item.Detail"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_margin="@dimen/fab_margin" />

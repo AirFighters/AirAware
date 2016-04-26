@@ -1,4 +1,4 @@
-package com.airfighters.airaware;
+package com.airfighters.airaware.views;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;

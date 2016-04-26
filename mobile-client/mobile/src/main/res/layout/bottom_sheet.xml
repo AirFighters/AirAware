@@ -22,7 +22,7 @@
             android:layout_width="56dp"
             android:layout_height="match_parent"
             android:id="@+id/diseaseImage"
-            android:src="@drawable/ic_medical"
+            android:src="@drawable/common_ic_googleplayservices"
             android:tint="@color/divider"
             android:padding="4dp"/>
 
