@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for daq project
+# Scrapy settings for daq_medhelp project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,18 +9,18 @@
 #     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'daq'
+BOT_NAME = 'daq_medhelp'
 
-SPIDER_MODULES = ['daq.spiders']
-NEWSPIDER_MODULE = 'daq.spiders'
+SPIDER_MODULES = ['daq_medhelp.spiders']
+NEWSPIDER_MODULE = 'daq_medhelp.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'daq (+http://www.yourdomain.com)'
-USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"
+USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 " \
+        + "(KHTML, like Gecko) Chrome/27.0.1453.93 Safari/537.36"
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS=32
+CONCURRENT_REQUESTS=1
 
 # Configure a delay for requests for the same website (default: 0)
 # See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
@@ -45,13 +45,13 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, lik
 # Enable or disable spider middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    'daq.middlewares.MyCustomSpiderMiddleware': 543,
+#    'daq_medhelp.middlewares.MyCustomSpiderMiddleware': 543,
 #}
 
 # Enable or disable downloader middlewares
 # See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    'daq.middlewares.MyCustomDownloaderMiddleware': 543,
+#    'daq_medhelp.middlewares.MyCustomDownloaderMiddleware': 543,
 #}
 
 # Enable or disable extensions
@@ -63,13 +63,13 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, lik
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    'daq.pipelines.SomePipeline': 300,
+#    'daq_medhelp.pipelines.SomePipeline': 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
 # NOTE: AutoThrottle will honour the standard settings for concurrency and delay
-#AUTOTHROTTLE_ENABLED=True
+AUTOTHROTTLE_ENABLED=True
 # The initial download delay
 #AUTOTHROTTLE_START_DELAY=5
 # The maximum download delay to be set in case of high latencies
@@ -84,6 +84,3 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, lik
 #HTTPCACHE_DIR='httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES=[]
 #HTTPCACHE_STORAGE='scrapy.extensions.httpcache.FilesystemCacheStorage'
-DOWNLOAD_HANDLERS = {
-    's3': None,
-}
