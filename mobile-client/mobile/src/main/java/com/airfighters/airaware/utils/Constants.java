@@ -377,6 +377,20 @@ public interface Constants {
                 "      \"longitude\" : -77.036871,\n" +
                 "      \"population\" : 658893,\n" +
                 "      \"diseases\" : [19, 6, 27]\n" +
+                "    },\n" +
+                "        {\n" +
+                "      \"name\" : \"Glasgow\",\n" +
+                "      \"latitude\" : 55.864237,\n" +
+                "      \"longitude\" : -4.251806,\n" +
+                "      \"population\" : 1750000,\n" +
+                "      \"diseases\" : [28, 5, 34]\n" +
+                "    },\n" +
+                "        {\n" +
+                "      \"name\" : \"London\",\n" +
+                "      \"latitude\" : 51.507351,\n" +
+                "      \"longitude\" : -0.127758,\n" +
+                "      \"population\" : 8538689,\n" +
+                "      \"diseases\" : [40, 10, 35]\n" +
                 "    }\n" +
                 "    ]\n" +
                 "}";
