@@ -28,6 +28,8 @@ import com.airfighters.airaware.model.Oras;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -63,15 +65,44 @@ public class Utils {
     private static Random rand = new Random();
 
     public static City getCity(Oras oras, List<Disease> diseases) {
+        return getCity(oras, diseases, true);
+    }
+
+    public static City getCity(Oras oras, List<Disease> diseases, boolean isPolluted) {
+        int minRand;
+        int maxRand;
+
+        if (isPolluted) {
+            minRand = 1000;
+            maxRand = 10000;
+        } else {
+            minRand = 50;
+            maxRand = 400;
+        }
+
         List<Disease> boale = new ArrayList<>();
 
         for (Integer dIdx : oras.diseases) {
             Disease temp = diseases.get(dIdx);
-            int ppl = rand.nextInt(10000) + 100;
+            int ppl = rand.nextInt(maxRand) + minRand;
             boale.add(new Disease(temp.title, temp.description, temp.color, ppl));
         }
 
         return new City(oras.population, oras.name, new LatLng(oras.latitude, oras.longitude), boale);
+    }
+
+    public static void sortCities(List<Oras> list) {
+        Collections.sort(list, new Comparator<Oras>() {
+            @Override
+            public int compare(Oras lhs, Oras rhs) {
+                if (lhs.population > rhs.population) {
+                    return -1;
+                } else if (lhs.population < rhs.population) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
     }
 
     public static Animator createShowItemAnimator(View centerItem, View item) {

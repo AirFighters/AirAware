@@ -27,9 +27,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/wheel_indicator_view"
-        app:itemsLineWidth="13dp"
+        android:layout_margin="4dp"
+        app:itemsLineWidth="8dp"
         app:filledPercent="40"
         app:backgroundColor="@color/white"
         app:layout_box="all" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/details_layout"
+        android:orientation="vertical"
+        android:layout_margin="40dp" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Londong"
+            android:id="@+id/city_name"
+            android:gravity="center"/>
+    </LinearLayout>
 </android.support.wearable.view.BoxInsetLayout>

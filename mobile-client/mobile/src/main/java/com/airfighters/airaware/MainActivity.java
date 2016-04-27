@@ -203,11 +203,19 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         Diseases diseases = new Gson().fromJson(Constants.DISEASES_JSON, Diseases.class);
         Cities cities = new Gson().fromJson(Constants.CITIES_JSON, Cities.class);
 
+        Utils.sortCities(cities.cities);
+
         orase = new ArrayList<>();
 
         int arraySize = cities.cities.size();
         for (int i = 0; i < arraySize; i++) {
-            City temp = Utils.getCity(cities.cities.get(i), diseases.diseases);
+            City temp = null;
+            if (cities.cities.get(i).name.equals("Glasgow")) {
+                temp = Utils.getCity(cities.cities.get(i), diseases.diseases, false);
+            } else {
+                temp = Utils.getCity(cities.cities.get(i), diseases.diseases);
+            }
+
             temp.pollutionFactor = (arraySize - i) / (float) arraySize;
 
             orase.add(temp);

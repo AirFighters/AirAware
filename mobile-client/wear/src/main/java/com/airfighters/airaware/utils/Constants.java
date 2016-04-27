@@ -1,11 +1,16 @@
 package com.airfighters.airaware.utils;
 
 /**
- * Created by alex on 23.04.2016.
+ * Created by alex on 27.04.2016.
  */
 public interface Constants {
-    int MARKER_CLICK_ZOOM_LEVEL = 7;
-    float CITY_APPROXIMATION = 0.05f;
+    String LONDON_JSON = "{\n" +
+            "  \"name\" : \"London\",\n" +
+            "  \"latitude\" : 51.507351,\n" +
+            "  \"longitude\" : -0.127758,\n" +
+            "  \"population\" : 8538689,\n" +
+            "  \"diseases\" : [40, 11, 34]\n" +
+            "}";
 
     String DISEASES_JSON = "{\n" +
             "  \"diseases\": [\n" +
@@ -221,177 +226,4 @@ public interface Constants {
             "     }\n" +
             "  ]\n" +
             "}";
-
-        String CITIES_JSON = "{\n" +
-                "  \"cities\" : [\n" +
-                "    {\n" +
-                "      \"name\" : \"New York\",\n" +
-                "      \"latitude\" : 40.712784,\n" +
-                "      \"longitude\" : -74.005941,\n" +
-                "      \"population\" : 8491079,\n" +
-                "      \"diseases\" : [19, 30, 37]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Los Angeles\",\n" +
-                "      \"latitude\" : 34.052234,\n" +
-                "      \"longitude\" : -118.243685,\n" +
-                "      \"population\" : 3928864,\n" +
-                "      \"diseases\" : [18, 14, 16]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Chicago\",\n" +
-                "      \"latitude\" : 41.878114,\n" +
-                "      \"longitude\" : -87.629798,\n" +
-                "      \"population\" : 2722389,\n" +
-                "      \"diseases\" : [27, 4, 9]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Houston\",\n" +
-                "      \"latitude\" : 29.760427,\n" +
-                "      \"longitude\" : -95.369803,\n" +
-                "      \"population\" : 2239558,\n" +
-                "      \"diseases\" : [23, 40, 31]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Philadelphia\",\n" +
-                "      \"latitude\" : 39.952584,\n" +
-                "      \"longitude\" : -75.165222,\n" +
-                "      \"population\" : 1560297,\n" +
-                "      \"diseases\" : [15, 41, 39]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Phoenix\",\n" +
-                "      \"latitude\" : 33.448377,\n" +
-                "      \"longitude\" : -112.074037,\n" +
-                "      \"population\" : 1537058,\n" +
-                "      \"diseases\" : [4, 33, 12]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"San Antonio\",\n" +
-                "      \"latitude\" : 29.424122,\n" +
-                "      \"longitude\" : -98.493628,\n" +
-                "      \"population\" : 1436697,\n" +
-                "      \"diseases\" : [13, 10, 28]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"San Diego\",\n" +
-                "      \"latitude\" : 32.715738,\n" +
-                "      \"longitude\" : -117.161084,\n" +
-                "      \"population\" : 1381069,\n" +
-                "      \"diseases\" : [25, 13, 41]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Dallas\",\n" +
-                "      \"latitude\" : 32.776664,\n" +
-                "      \"longitude\" : -96.796988,\n" +
-                "      \"population\" : 1281047,\n" +
-                "      \"diseases\" : [13, 35, 31]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"San Jose\",\n" +
-                "      \"latitude\" : 37.338208,\n" +
-                "      \"longitude\" : -121.886329,\n" +
-                "      \"population\" : 1015785,\n" +
-                "      \"diseases\" : [26, 6, 41]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Austin\",\n" +
-                "      \"latitude\" : 30.267153,\n" +
-                "      \"longitude\" : -97.743061,\n" +
-                "      \"population\" : 912791,\n" +
-                "      \"diseases\" : [1, 24, 16]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Jacksonville\",\n" +
-                "      \"latitude\" : 30.332184,\n" +
-                "      \"longitude\" : -81.655651,\n" +
-                "      \"population\" : 853382,\n" +
-                "      \"diseases\" : [11, 14, 9]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"San Francisco\",\n" +
-                "      \"latitude\" : 37.774929,\n" +
-                "      \"longitude\" : -122.419416,\n" +
-                "      \"population\" : 852469,\n" +
-                "      \"diseases\" : [6, 38, 34]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Indianapolis\",\n" +
-                "      \"latitude\" : 39.768403,\n" +
-                "      \"longitude\" : -86.158068,\n" +
-                "      \"population\" : 848788,\n" +
-                "      \"diseases\" : [13, 16, 17]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Columbus\",\n" +
-                "      \"latitude\" : 39.961176,\n" +
-                "      \"longitude\" : -82.998794,\n" +
-                "      \"population\" : 835957,\n" +
-                "      \"diseases\" : [20, 37, 16]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Fort Worth\",\n" +
-                "      \"latitude\" : 32.755488,\n" +
-                "      \"longitude\" : -97.330766,\n" +
-                "      \"population\" : 8491079,\n" +
-                "      \"diseases\" : [15, 5, 27]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Charlotte\",\n" +
-                "      \"latitude\" : 35.227087,\n" +
-                "      \"longitude\" : -80.843127,\n" +
-                "      \"population\" : 809958,\n" +
-                "      \"diseases\" : [11, 23, 12]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Detroit\",\n" +
-                "      \"latitude\" : 42.331427,\n" +
-                "      \"longitude\" : -83.045754,\n" +
-                "      \"population\" : 680250,\n" +
-                "      \"diseases\" : [7, 15, 4]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"El Paso\",\n" +
-                "      \"latitude\" : 31.761878,\n" +
-                "      \"longitude\" : -106.485022,\n" +
-                "      \"population\" : 679036,\n" +
-                "      \"diseases\" : [34, 5, 10]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Seattle\",\n" +
-                "      \"latitude\" : 47.606209,\n" +
-                "      \"longitude\" : -122.332071,\n" +
-                "      \"population\" : 668342,\n" +
-                "      \"diseases\" : [26, 8, 30]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Denver\",\n" +
-                "      \"latitude\" : 39.739236,\n" +
-                "      \"longitude\" : -104.990251,\n" +
-                "      \"population\" : 663862,\n" +
-                "      \"diseases\" : [4, 8, 35]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Washington\",\n" +
-                "      \"latitude\" : 38.907192,\n" +
-                "      \"longitude\" : -77.036871,\n" +
-                "      \"population\" : 658893,\n" +
-                "      \"diseases\" : [19, 6, 27]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"London\",\n" +
-                "      \"latitude\" : 51.507351,\n" +
-                "      \"longitude\" : -0.127758,\n" +
-                "      \"population\" : 8538689,\n" +
-                "      \"diseases\" : [40, 10, 35]\n" +
-                "    },\n" +
-                "        {\n" +
-                "      \"name\" : \"Glasgow\",\n" +
-                "      \"latitude\" : 55.864237,\n" +
-                "      \"longitude\" :-4.251806,\n" +
-                "      \"population\" : 658893,\n" +
-                "      \"diseases\" : [28, 5, 34]\n" +
-                "    }\n" +
-                "    ]\n" +
-                "}";
 }
